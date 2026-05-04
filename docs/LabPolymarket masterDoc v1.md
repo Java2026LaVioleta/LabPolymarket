@@ -75,7 +75,7 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
 
 # DIAGRAMS Type C4
 
-1. C4 – Level 1: System Context Diagram
+1. C4 – Level 1: System Context Diagram (System Context.png)
 
                 ┌──────────────────────┐
                 │        User          │
@@ -100,7 +100,7 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
 
 
 
-2. C4 – Level 2: Container Diagram
+2. C4 – Level 2: Container Diagram (container.png)
 
         ┌──────────────────────────────────────────────┐
         │                  User                        │
@@ -139,7 +139,7 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
 
 
 
-3. C3 – Level 3: Backend Component Diagram
+3. C3 – Level 3: Backend Component Diagram (Backend Component Diagram.png)
 
         ┌──────────────────────────────────────────────────────────┐
         │             Spring Boot Backend                          │
