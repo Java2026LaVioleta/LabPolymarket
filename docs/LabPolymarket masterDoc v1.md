@@ -1,4 +1,4 @@
-# PROJECT ARCHITECTURE: Polymarket Real-Time Dashboard
+# Polymarket Architecture:  Real-Time Dashboard
 
 1. Overview
 
@@ -68,12 +68,12 @@ Event Stream (Sinks/Flux): Broadcasts updates to subscribers
 
 When a change is detected, a MarketUpdate event is generated and pushed to subscribed clients via GraphQL Subscriptions.
 
+
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 
-
 # DIAGRAMS Type C4
-
 
 1. C4 – Level 1: System Context Diagram
 
@@ -99,87 +99,87 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
 
 
 
+
 2. C4 – Level 2: Container Diagram
 
-┌──────────────────────────────────────────────┐
-│                  User                        │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────┐
-│        Frontend (React + Apollo Client)      │
-│----------------------------------------------│
-│ - Dashboard UI                               │
-│ - Market Detail View                         │
-│ - Favorites                                  │
-│ - Apollo Client (HTTP + WebSocket)           │
-└──────────────────────┬───────────────────────┘
-                       │ GraphQL
-                       ▼
-┌──────────────────────────────────────────────┐
-│         Backend (Spring Boot)                │
-│----------------------------------------------│
-│ - GraphQL API                                │
-│ - Security (JWT)                             │
-│ - Business Logic                             │
-│ - Reactive System (Flux / Sinks)             │
-│ - Polling Service                            │
-└───────────────┬───────────────┬──────────────┘
-                │               │
-                ▼               ▼
-     ┌──────────────────┐   ┌──────────────────────┐
-     │  DatabPostgreSQL │   │ Polymarket API       │
-     │------------------│   │ (External REST API)  │
-     │ - Users          │   └──────────────────────┘
-     │ - Favorites      │
-     │ - Predictions    │
-     └──────────────────┘
+        ┌──────────────────────────────────────────────┐
+        │                  User                        │
+        └──────────────────────┬───────────────────────┘
+                            │
+                            ▼
+        ┌──────────────────────────────────────────────┐
+        │        Frontend (React + Apollo Client)      │
+        │----------------------------------------------│
+        │ - Dashboard UI                               │
+        │ - Market Detail View                         │
+        │ - Favorites                                  │
+        │ - Apollo Client (HTTP + WebSocket)           │
+        └──────────────────────┬───────────────────────┘
+                            │ GraphQL
+                            ▼
+        ┌──────────────────────────────────────────────┐
+        │         Backend (Spring Boot)                │
+        │----------------------------------------------│
+        │ - GraphQL API                                │
+        │ - Security (JWT)                             │
+        │ - Business Logic                             │
+        │ - Reactive System (Flux / Sinks)             │
+        │ - Polling Service                            │
+        └───────────────┬───────────────┬──────────────┘
+                        │               │
+                        ▼               ▼
+            ┌──────────────────┐   ┌──────────────────────┐
+            │   Database       │   │ Polymarket API       │
+            │------------------│   │ (External REST API)  │
+            │ - Users          │   └──────────────────────┘
+            │ - Favorites      │
+            │ - Predictions    │
+            └──────────────────┘
 
 
 
-2. C4 – Level 3: Backend Component Diagram
 
-┌──────────────────────────────────────────────────────────┐
-│             Spring Boot Backend                          │
-└──────────────────────────────────────────────────────────┘
+3. C3 – Level 3: Backend Component Diagram
 
-   ┌──────────────────────────────────────────────────┐
-   │                GraphQL Layer                     │
-   │--------------------------------------------------│
-   │ Query Resolver                                   │
-   │ Mutation Resolver                                │
-   │ Subscription Resolver                            │
-   └──────────────────────┬───────────────────────────┘
-                          │
-                          ▼
-   ┌──────────────────────────────────────────────────┐
-   │                Service Layer                     │
-   │--------------------------------------------------│
-   │ MarketService                                    │
-   │ UserService                                      │
-   │ PredictionService                                │
-   └───────────────┬──────────────────────┬───────────┘
-                   │                      │
-                   ▼                      ▼
+        ┌──────────────────────────────────────────────────────────┐
+        │             Spring Boot Backend                          │
+        └──────────────────────────────────────────────────────────┘
 
-   ┌──────────────────────────┐   ┌──────────────────────────┐
-   │ PolymarketClient         │   │ Persistence Layer        │
-   │--------------------------│   │--------------------------│
-   │ WebClient (REST API)     │   │ UserRepository           │
-   │                          │   │ FavoriteRepository       │
-   └──────────────┬───────────┘   │ PredictionRepository     │
-                  │               └──────────────────────────┘
-                  ▼
-   ┌──────────────────────────────────────────────────┐
-   │        Polling & Event System                    │
-   │--------------------------------------------------│
-   │ MarketPollingService (Scheduled Task)            │
-   │ In-memory Cache (Map<MarketId, Market>)          │
-   │ Change Detection                                 │
-   │ Event Stream (Sinks.Many<MarketUpdate>)          │
-   └──────────────────────┬───────────────────────────┘
-                          │
-                          ▼
-                GraphQL Subscription Stream
+        ┌──────────────────────────────────────────────────┐
+        │                GraphQL Layer                     │
+        │--------------------------------------------------│
+        │ Query Resolver                                   │
+        │ Mutation Resolver                                │
+        │ Subscription Resolver                            │
+        └──────────────────────┬───────────────────────────┘
+                                │
+                                ▼
+        ┌──────────────────────────────────────────────────┐
+        │                Service Layer                     │
+        │--------------------------------------------------│
+        │ MarketService                                    │
+        │ UserService                                      │
+        │ PredictionService                                │
+        └───────────────┬──────────────────────┬───────────┘
+                        │                      │
+                        ▼                      ▼
 
-
+        ┌──────────────────────────┐   ┌──────────────────────────┐
+        │ PolymarketClient         │   │ Persistence Layer        │
+        │--------------------------│   │--------------------------│
+        │ WebClient (REST API)     │   │ UserRepository           │
+        │                          │   │ FavoriteRepository       │
+        └───────────────┬──────────┘   │ PredictionRepository     │
+                        │              └──────────────────────────┘
+                        ▼
+        ┌──────────────────────────────────────────────────┐
+        │        Polling & Event System                    │
+        │--------------------------------------------------│
+        │ MarketPollingService (Scheduled Task)            │
+        │ In-memory Cache (Map<MarketId, Market>)          │
+        │ Change Detection                                 │
+        │ Event Stream (Sinks.Many<MarketUpdate>)          │
+        └───────────────────────┬──────────────────────────┘
+                                │
+                                ▼
+                        GraphQL Subscription Stream
