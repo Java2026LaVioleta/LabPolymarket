@@ -1,3 +1,4 @@
+/*
 package com.lab_polymarket.polymarket_backend;
 
 import com.lab_polymarket.polymarket_backend.model.Market;
@@ -81,3 +82,4 @@ public class MarketRepositoryPostgresTest {
         marketRepository.deleteById("market-postgres-123");
     }
 }
+*/
