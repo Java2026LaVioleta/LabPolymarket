@@ -104,7 +104,7 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
 
         ┌──────────────────────────────────────────────┐
         │                  User                        │
-        └──────────────────────┬───────────────────────┘
+        └───────────────────┬──────────────────────────┘
                             │
                             ▼
         ┌──────────────────────────────────────────────┐
@@ -114,7 +114,7 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
         │ - Market Detail View                         │
         │ - Favorites                                  │
         │ - Apollo Client (HTTP + WebSocket)           │
-        └──────────────────────┬───────────────────────┘
+        └───────────────────┬──────────────────────────┘
                             │ GraphQL
                             ▼
         ┌──────────────────────────────────────────────┐
