@@ -187,32 +187,6 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
-# PROJECT STRUCTURE
-
-├── main
-│   ├── java
-│   │   └── com
-│   │       └── lab_polymarket
-│   │           └── polymarket_backend
-│   │               │   
-│   │               ├── controller
-│   │               │   ├── MarketController.java  
-│   │               ├── model
-│   │               │   ├── Market.java
-│   │               ├── repository
-│   │               │   ├── MarketRepository.java
-│   │               └── service
-│   │                   ├── MarketService.java
-│   └── resources
-│       └── application.properties
-└── test
-    └── java
-        └── com
-            └── lab_polymarket
-                └── MarketRepositoryPostgresTest
-                └── PolymarketBackendApplicationTests
-
-
 
 # DATAMODEL
 
