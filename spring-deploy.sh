@@ -35,9 +35,6 @@ else
     GIT_TOKEN=$(cat "$TOKEN_FILE")
 fi
 
-echo " [DEBUG] Token starts with: ${GIT_TOKEN:0:10}"
-echo " [DEBUG] Token length: ${#GIT_TOKEN}"
-
 # --- Find Version ---
 VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null)
 echo " [INFO] Deploying backend version $VERSION"
@@ -138,6 +135,20 @@ if ! ln "$JAR_DEST_DIR/$JAR_VERSIONED" "$REPO_DIR/latest.jar"; then
     echo " [WARN] Could not create hardlink. Falling back to plain copy for latest.jar."
     cp "$JAR_DEST_DIR/$JAR_VERSIONED" "$REPO_DIR/latest.jar"
 fi
+
+# --- Update workflow ---
+VERSIONS=$(ls "$JAR_DEST_DIR"/polymarket-sb-*.jar | sed 's/.*polymarket-sb-//' | sed 's/\.jar//' | sort -r)
+
+OPTIONS="          - latest\n"
+for v in $VERSIONS; do
+    OPTIONS="$OPTIONS          - $v\n"
+done
+
+# Replace the options section in the workflow file
+sed -i "/^        options:/,/^        [^ ]/{/^        options:/!{/^        [^ ]/!d}}" .github/workflows/deploy.yml
+sed -i "s/^        options:/        options:\n$OPTIONS/" .github/workflows/deploy.yml
+
+git add .github/workflows/deploy.yml > /dev/null
 
 # Stage, commit and push
 cd "$REPO_DIR"

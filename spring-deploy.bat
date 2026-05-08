@@ -33,9 +33,6 @@ if not exist "%USERPROFILE%\.polymarket_token" (
 ) else (
     <nul set /p "=!GIT_TOKEN!"> "%USERPROFILE%\.polymarket_token"
 )
-
-echo  [DEBUG] Token starts with: !GIT_TOKEN:~0,10!
-echo  [DEBUG] Token length:
 echo !GIT_TOKEN!| find /v /c ""
 
 :: --- Find Version ---
@@ -150,13 +147,57 @@ if errorlevel 1 (
     copy /y "%JAR_DEST_DIR%\%JAR_VERSIONED%" "%REPO_DIR%\latest.jar" >nul
 )
 
+:: --- Update workflow ---
+set "WORKFLOW=%REPO_DIR%\.github\workflows\deploy.yml"
+
+:: Collect versions sorted descending
+set "VERSION_LIST="
+for /f "tokens=*" %%f in ('dir /b /o-n "%JAR_DEST_DIR%\polymarket-sb-*.jar" 2^>nul') do (
+    set "FNAME=%%f"
+    set "FNAME=!FNAME:polymarket-sb-=!"
+    set "FNAME=!FNAME:.jar=!"
+    if "!VERSION_LIST!"=="" (
+        set "VERSION_LIST=!FNAME!"
+    ) else (
+        set "VERSION_LIST=!VERSION_LIST!,!FNAME!"
+    )
+)
+
+:: Write PowerShell script to temp file
+set "PS_TEMP=%TEMP%\update_workflow.ps1"
+
+if exist "%PS_TEMP%" del "%PS_TEMP%" >nul 2>&1
+
+echo $workflow = '%WORKFLOW%' >> "%PS_TEMP%"
+echo $versions = ('latest,%VERSION_LIST%' -split ',') >> "%PS_TEMP%"
+echo $content = Get-Content $workflow >> "%PS_TEMP%"
+echo $result = @() >> "%PS_TEMP%"
+echo $inOptions = $false >> "%PS_TEMP%"
+echo foreach ($line in $content) { >> "%PS_TEMP%"
+echo     if ($line -match '^\s+options:') { >> "%PS_TEMP%"
+echo         $result += $line >> "%PS_TEMP%"
+echo         foreach ($v in $versions) { $result += '          - ' + $v } >> "%PS_TEMP%"
+echo         $inOptions = $true >> "%PS_TEMP%"
+echo     } elseif ($inOptions -and $line -match '^          - ') { >> "%PS_TEMP%"
+echo         continue >> "%PS_TEMP%"
+echo     } else { >> "%PS_TEMP%"
+echo         $inOptions = $false >> "%PS_TEMP%"
+echo         $result += $line >> "%PS_TEMP%"
+echo     } >> "%PS_TEMP%"
+echo } >> "%PS_TEMP%"
+echo $result ^| Set-Content $workflow >> "%PS_TEMP%"
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PS_TEMP%"
+del "%PS_TEMP%" >nul 2>&1
+
+git add "%WORKFLOW%" >nul
+
 :: Stage, commit, and push with the specified identity
 cd /d "%REPO_DIR%"
 git add "%JAR_DEST_DIR%\*" "%REPO_DIR%\latest.jar"
 
 :: Use -c flags to set identity per-commit without touching global git config
-git -c user.name="%GIT_NAME%" -c user.email="%GIT_EMAIL%" ^ >nul
-    commit -m "Test version %JAR_VERSIONED% added or modified."
+git -c user.name="%GIT_NAME%" -c user.email="%GIT_EMAIL%" commit -m "Test version %JAR_VERSIONED% added or modified." >nul
 if errorlevel 1 (
     echo  [WARN] Nothing to commit or commit failed.
 ) else (
