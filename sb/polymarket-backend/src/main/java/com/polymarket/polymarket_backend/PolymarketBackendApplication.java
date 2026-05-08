@@ -1,13 +1,20 @@
-package com.lab_polymarket.polymarket_backend;
+package com.polymarket.polymarket_backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootApplication
 public class PolymarketBackendApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PolymarketBackendApplication.class, args);
+	}
+
+	@Bean
+	public WebClient.Builder webClientBuilder() {
+		return WebClient.builder();
 	}
 
 }

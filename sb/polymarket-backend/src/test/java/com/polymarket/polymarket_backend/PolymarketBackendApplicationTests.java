@@ -1,4 +1,4 @@
-package com.lab_polymarket.polymarket_backend;
+package com.polymarket.polymarket_backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
