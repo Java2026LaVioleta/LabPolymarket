@@ -183,3 +183,53 @@ When a change is detected, a MarketUpdate event is generated and pushed to subsc
                                 │
                                 ▼
                         GraphQL Subscription Stream
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+# PROJECT STRUCTURE
+
+├── main
+│   ├── java
+│   │   └── com
+│   │       └── lab_polymarket
+│   │           └── polymarket_backend
+│   │               │   
+│   │               ├── controller
+│   │               │   ├── MarketController.java  
+│   │               ├── model
+│   │               │   ├── Market.java
+│   │               ├── repository
+│   │               │   ├── MarketRepository.java
+│   │               └── service
+│   │                   ├── MarketService.java
+│   └── resources
+│       └── application.properties
+└── test
+    └── java
+        └── com
+            └── lab_polymarket
+                └── MarketRepositoryPostgresTest
+                └── PolymarketBackendApplicationTests
+
+
+
+# DATAMODEL
+
+Java classes
+
+public class Market {
+
+    @Id
+    private String id;
+    private String question;
+    private String conditionId;
+    private String category;
+    private String liquidity;
+    private LocalDate endDate;
+    private String outcomes;
+    private String outcomePrices;
+    private String volume;
+    private Boolean active;
+}
+
