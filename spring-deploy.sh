@@ -19,7 +19,7 @@ JDK_HOME="$JDK_CACHE_DIR/jdk-$JDK_VERSION"
 # ============================================================
 
 # --- Download/setup JDK ---
-echo -n " [0/4] Configuring Java..."
+echo " [0/4] Configuring Java..."
 echo -n "   [-] Finding JDK..."
 if [ -d "$JDK_HOME" ] && [ -x "$JDK_HOME/bin/java" ]; then
     echo -e "\r\e[0K   [-] JDK $JDK_VERSION found at $JDK_HOME"
