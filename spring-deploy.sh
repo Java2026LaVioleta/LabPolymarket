@@ -68,7 +68,9 @@ export JAVA_HOME="$JDK_HOME"
 export PATH="$JDK_HOME/bin:$PATH"
 
 # --- Other setup ---
+echo "------------------------------------------------------------"
 echo " [1/4] Setting up..."
+
 # --- Misc setup ---
 git config core.safecrlf false
 
