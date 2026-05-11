@@ -11,8 +11,63 @@ GIT_EMAIL="deployerbot@decin.co"
 JAR_SOURCE="/target"
 JAR_DEST_DIR="$REPO_DIR/packages"
 RAILWAY_URL="test-labpolymarket.up.railway.app"
+
+# JDK configuration
+JDK_VERSION="26"
+JDK_CACHE_DIR="$HOME/.deployment-jdks"
+JDK_HOME="$JDK_CACHE_DIR/jdk-$JDK_VERSION"
 # ============================================================
 
+# --- Download/setup JDK ---
+echo -n " [0/4] Configuring Java..."
+echo -n "   [-] Finding JDK..."
+if [ -d "$JDK_HOME" ] && [ -x "$JDK_HOME/bin/java" ]; then
+    echo -e "\r\e[0K   [-] JDK $JDK_VERSION found at $JDK_HOME"
+else
+    echo -e "\r\e[0K   [-] JDK not found, downloading..."
+    mkdir -p "$JDK_CACHE_DIR"
+
+    # Detect OS for download
+    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+        JDK_URL="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_windows_hotspot_21.0.1_12.zip"
+        JDK_FILE="$JDK_CACHE_DIR/jdk-21-windows.zip"
+        if ! curl -sL -o "$JDK_FILE" "$JDK_URL"; then
+            echo -e "\r\e[0K   [X] Download failed"
+            exit 1
+        fi
+
+        echo -n "  [-] Extracting JDK..."
+        if ! unzip -q "$JDK_FILE" -d "$JDK_CACHE_DIR"; then
+            echo -e "\r\e[0K   [X] Extraction failed"
+            exit 1
+        fi
+        mv "$JDK_CACHE_DIR/jdk-21.0.1+12" "$JDK_HOME"
+        rm "$JDK_FILE"
+    else
+        JDK_URL="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_linux_hotspot_21.0.1_12.tar.gz"
+        JDK_FILE="$JDK_CACHE_DIR/jdk-21-linux.tar.gz"
+
+        echo -n "   [-] Downloading JDK for Linux..."
+        if ! curl -sL -o "$JDK_FILE" "$JDK_URL"; then
+            echo -e "\r\e[0K   [X] Download failed"
+            exit 1
+        fi
+
+        echo -n "   [-] Extracting JDK..."
+        if ! tar -xzf "$JDK_FILE" -C "$JDK_CACHE_DIR"; then
+            echo -e "\r\e[0K   [X] Extraction failed"
+            exit 1
+        fi
+        mv "$JDK_CACHE_DIR/jdk-21.0.1+12" "$JDK_HOME"
+        rm "$JDK_FILE"
+    fi
+    echo -e "\r\e[0K   [-] JDK installed"
+fi
+
+export JAVA_HOME="$JDK_HOME"
+export PATH="$JDK_HOME/bin:$PATH"
+
+# --- Other setup ---
 echo " [1/4] Setting up..."
 # --- Misc setup ---
 git config core.safecrlf false
@@ -39,44 +94,6 @@ else
 fi
 
 echo -e "\r\e[0K   [-] Retrieved token"
-
-# --- Find Java (JDK preferred) ---
-echo -n "   [-] Finding Java..."
-JDK_PATH=""
-
-# Check IDEA's bundled JDK locations
-for idea_jdk in \
-    "$HOME/.config/JetBrains/IntelliJIDEA*/jbr" \
-    "$HOME/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/*/jbr" \
-    "$HOME/.jdks/openjdk-"*"/" \
-    "/usr/lib/jvm/java-"*"-openjdk/"*; do
-    if [ -x "$idea_jdk/bin/javac" ]; then
-        JDK_PATH="$idea_jdk"
-        break
-    fi
-done
-
-# Fall back to system Java
-if [ -z "$JDK_PATH" ]; then
-    if command -v javac &> /dev/null; then
-        JDK_PATH=$(dirname "$(dirname "$(readlink -f "$(which javac)")")")
-    elif command -v java &> /dev/null; then
-        echo -e "\r\e[0K   [!] Only JRE found in PATH, not JDK, Maven may fail"
-        JDK_PATH=$(dirname "$(dirname "$(readlink -f "$(which java)")")")
-    else
-        echo -e "\r\e[0K   [X] No Java found"
-        exit 1
-    fi
-fi
-
-if [ ! -x "$JDK_PATH/bin/javac" ]; then
-    echo -e "\r\e[0K   [X] No JDK found"
-    exit 1
-fi
-
-echo -e "\r\e[0K   [-] JDK found at $JDK_PATH"
-export JAVA_HOME="$JDK_PATH"
-export PATH="$JDK_PATH/bin:$PATH"
 
 # --- Find Version ---
 echo -n "   [-] Getting backend version..."
