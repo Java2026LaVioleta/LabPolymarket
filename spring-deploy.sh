@@ -40,12 +40,6 @@ fi
 
 echo -e "\r\e[0K   [-] Retrieved token"
 
-# --- Find Version ---
-echo -n "   [-] Getting backend version..."
-VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null)
-echo -e "\r\e[0K   [-] Version $VERSION detected"
-PROJECT_JAR="$PROJECT_DIR$JAR_SOURCE/polymarket-backend-$VERSION.jar"
-
 # --- Find JDK 26 ---
 echo -n "   [-] Finding Java..."
 JDK_PATH=""
@@ -63,6 +57,13 @@ fi
 echo -e "\r\e[0K   [-] JDK pointed to $JDK_PATH"
 export JAVA_HOME="$JDK_PATH"
 export PATH="$JDK_PATH/bin:$PATH"
+
+# --- Find Version ---
+echo -n "   [-] Getting backend version..."
+VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null)
+echo -e "\r\e[0K   [-] Version $VERSION detected"
+PROJECT_JAR="$PROJECT_DIR$JAR_SOURCE/polymarket-backend-$VERSION.jar"
+
 
 # --- Build ---
 echo "------------------------------------------------------------"
