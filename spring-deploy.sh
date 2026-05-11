@@ -40,29 +40,54 @@ fi
 
 echo -e "\r\e[0K   [-] Retrieved token"
 
-# --- Find JDK 26 ---
+# --- Find Java (JDK preferred) ---
 echo -n "   [-] Finding Java..."
 JDK_PATH=""
-for dir in "$HOME"/.jdks/openjdk-26*/; do
-    if [ -x "$dir/bin/javac" ]; then
-        JDK_PATH="$dir"
+
+# Check IDEA's bundled JDK locations
+for idea_jdk in \
+    "$HOME/.config/JetBrains/IntelliJIDEA*/jbr" \
+    "$HOME/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/*/jbr" \
+    "$HOME/.jdks/openjdk-"*"/" \
+    "/usr/lib/jvm/java-"*"-openjdk/"*; do
+    if [ -x "$idea_jdk/bin/javac" ]; then
+        JDK_PATH="$idea_jdk"
         break
     fi
 done
 
+# Fall back to system Java
 if [ -z "$JDK_PATH" ]; then
-    echo -e "\r\e[0K   [X] No JDK 26 found in $HOME/.jdks/. Please make sure there is one."
+    if command -v javac &> /dev/null; then
+        JDK_PATH=$(dirname "$(dirname "$(readlink -f "$(which javac)")")")
+    elif command -v java &> /dev/null; then
+        echo -e "\r\e[0K   [!] Only JRE found in PATH, not JDK, Maven may fail"
+        JDK_PATH=$(dirname "$(dirname "$(readlink -f "$(which java)")")")
+    else
+        echo -e "\r\e[0K   [X] No Java found"
+        exit 1
+    fi
+fi
+
+if [ ! -x "$JDK_PATH/bin/javac" ]; then
+    echo -e "\r\e[0K   [X] No JDK found"
     exit 1
 fi
-echo -e "\r\e[0K   [-] JDK pointed to $JDK_PATH"
+
+echo -e "\r\e[0K   [-] JDK found at $JDK_PATH"
 export JAVA_HOME="$JDK_PATH"
 export PATH="$JDK_PATH/bin:$PATH"
 
 # --- Find Version ---
 echo -n "   [-] Getting backend version..."
-VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null)
+VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+if [ -z "$VERSION" ]; then
+    echo -e "\r\e[0K   [X] Failed to get version. Check your Java/Maven setup."
+    echo "   Debug output:"
+    ./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout
+    exit 1
+fi
 echo -e "\r\e[0K   [-] Version $VERSION detected"
-PROJECT_JAR="$PROJECT_DIR$JAR_SOURCE/polymarket-backend-$VERSION.jar"
 
 
 # --- Build ---
