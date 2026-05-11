@@ -15,12 +15,12 @@ RAILWAY_URL="test-labpolymarket.up.railway.app"
 
 echo " [1/4] Setting up..."
 # --- Misc setup ---
-# git config core.safecrlf false
+git config core.safecrlf false
 
 # --- Get working directory ---
 echo -n "   [-] Navigating to spring directory..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$SCRIPT_DIR/sb"
+PROJECT_DIR="$SCRIPT_DIR/sb/polymarket-backend"
 cd "$PROJECT_DIR"
 echo -e "\r\e[0K   [-] Working at $PROJECT_DIR"
 
@@ -80,7 +80,7 @@ export PATH="$JDK_PATH/bin:$PATH"
 
 # --- Find Version ---
 echo -n "   [-] Getting backend version..."
-VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>&1)
 if [ -z "$VERSION" ]; then
     echo -e "\r\e[0K   [X] Failed to get version. Check your Java/Maven setup."
     echo "   Debug output:"
