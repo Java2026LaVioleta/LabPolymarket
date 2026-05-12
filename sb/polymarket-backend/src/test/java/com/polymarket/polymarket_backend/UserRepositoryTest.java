@@ -6,7 +6,6 @@ import com.polymarket.polymarket_backend.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -17,11 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@TestPropertySource(properties = {
-	"spring.datasource.url=jdbc:postgresql://ep-patient-flower-ala66vp8-pooler.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require&channelBinding=require",
-	"spring.datasource.username=neondb_owner",
-	"spring.datasource.password=npg_eaKvUV2ZyI3L"
-})
 @Transactional
 class UserRepositoryTest {
 
