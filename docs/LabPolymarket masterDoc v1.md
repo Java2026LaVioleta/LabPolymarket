@@ -1,4 +1,4 @@
-# Polymarket Architecture:  Real-Time Dashboard
+# Polyrouter Architecture:  Real-Time Dashboard
 
 1. Overview
 
@@ -14,9 +14,24 @@ The system uses a hybrid communication model:
 HTTP for GraphQL Queries and Mutations
 WebSocket for GraphQL Subscriptions (real-time updates)
 
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 
-2. Backend Architecture
+2. PRODUCT GOAL
+
+To deliver a predictive market visualization platform that allows users to monitor and react to changes in real time, centralizing Polyrouter data in an interactive, stable, and highly responsive dashboard.
+
+For this:
+
+    - Efficiently consume the Polyrouter API and detect even the smallest changes between data captures.
+    - Ensure the Event Stream notifies the frontend in less than one second after detecting a change.
+    - Create a React interface that is not only aesthetically pleasing but also manages Apollo Client subscriptions without degrading browser performance.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+
+3. Backend Architecture
 
 The backend follows a layered architecture inspired by the hexagonal pattern, ensuring clear separation of responsibilities and maintainability.
 
@@ -61,7 +76,7 @@ This is a key component of the architecture.
 
 It includes:
 
-Polling Service: Periodically fetches data from the Polymarket API
+Polling Service: Periodically fetches data from the Polyrouter API
 In-memory Cache: Stores the previous state of markets
 Change Detection Mechanism: Compares new and previous data
 Event Stream (Sinks/Flux): Broadcasts updates to subscribers
