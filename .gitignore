@@ -1,7 +1,10 @@
 # ----- SPRING -----
 
+*/target/*
+
 # IDEA
-sb/.idea/
+sb/.idea
+.idea/
 sb/out/
 sb/output/
 **/build/
