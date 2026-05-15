@@ -1,0 +1,19 @@
+type User {
+    id: ID!
+    email: String!
+    username: String!
+    favoriteMarketIds: [String!]
+}
+
+type Query {
+    users: [User!]!
+    user(id: ID!): User
+}
+
+type Mutation {
+    createUser(email: String!, password: String!, username: String!): User!
+    updateUser(id: ID!, email: String!, password: String!, username: String!): User!
+    deleteUser(id: ID!): Boolean!
+    addFavoriteMarket(userId: ID!, marketId: String!): User!
+    removeFavoriteMarket(userId: ID!, marketId: String!): User!
+}
